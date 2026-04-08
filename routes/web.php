@@ -1,20 +1,20 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
 
 Route::get('/', function () {
     return redirect('/login');
 });
 
-// Hiển thị form login
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-// Xử lý đăng nhập
-Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-// Dashboard sau khi đăng nhập
-Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
-
-// Đăng xuất
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+require __DIR__.'/auth.php';
